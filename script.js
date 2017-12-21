@@ -12,7 +12,8 @@ require(
   function(jQuery){
     var triggerButton = jQuery('#lp-pom-button-15');
     var clonedTrigger = triggerButton.clone();
-    var formValidator = jQuery('#lp-pom-form-14 > form').validate({
+    var originalForm = jQuery('#lp-pom-form-14 > form');
+    var formValidator = originalForm.validate({
       // Specify validation rules
       rules: {
         email: {
@@ -33,7 +34,19 @@ require(
     clonedTrigger.click(function(e) {
       e.preventDefault();
       if (formValidator.form()) {
-        window.location.href = '//try.markhyman.com/brokenbrainep1/';
+        jQuery.ajax({
+          type: "POST",
+          url: "https://us-central1-ontraport-api.cloudfunctions.net/contacts",
+          contentType: "application/json",
+          dataType: "json",
+          data: JSON.stringify({
+            firstname: originalForm.find('#first_name').val(),
+            email: originalForm.find('#email').val()
+          })
+        }).done(function(resp) {
+          console.log(resp);
+          window.location.href = '/brokenbrainep1/';
+        });
       }
     });
   }
